@@ -28,9 +28,9 @@ export default function Aboutpage(): React.JSX.Element {
         <div className='bg-[#cfd592] border-l-4 border-[#757f31] p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 rounded-r-lg'>
           <h2 className='text-xl sm:text-2xl lg:text-3xl font-semibold text-[#494f25] mb-3 sm:mb-4'>The Problem We Solve</h2>
           <p className='text-[#494f25] text-sm sm:text-base lg:text-lg leading-relaxed'>
-            As a small business owner, you're juggling data from everywhere - sales spreadsheets, inventory lists,
-            customer information, marketing results. It's scattered, confusing, and expensive enterprise software
-            is out of reach. You need insights but don't have time to become a data expert.
+            As a small business owner, you&apos;re juggling data from everywhere - sales spreadsheets, inventory lists,
+            customer information, marketing results. It&apos;s scattered, confusing, and expensive enterprise software
+            is out of reach. You need insights but don&apos;t have time to become a data expert.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ export default function Aboutpage(): React.JSX.Element {
         <div className='bg-[#cfd592] border-l-4 border-[#757f31] p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 rounded-r-lg'>
           <h2 className='text-xl sm:text-2xl lg:text-3xl font-semibold text-[#494f25] mb-3 sm:mb-4'>Our Simple Solution</h2>
           <p className='text-[#494f25] text-sm sm:text-base lg:text-lg mb-4 leading-relaxed'>
-            We've created a web application that works like having a data analyst on your team, but without the cost or complexity.
+            We&apos;ve created a web application that works like having a data analyst on your team, but without the cost or complexity.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export default function Aboutpage(): React.JSX.Element {
             <h3 className='text-lg sm:text-xl lg:text-2xl text-[#757f31] font-semibold mb-2 sm:mb-3'>Automatic Data Cleaning</h3>
             <p className='text-gray-600 text-sm sm:text-base leading-relaxed'>
               Our app automatically fixes common data problems like duplicates and formatting issues,
-              so you don't have to.
+              so you don&apos;t have to.
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default function Aboutpage(): React.JSX.Element {
         <div className='bg-[#cfd592] p-4 sm:p-6 lg:p-8 rounded-lg'>
           <div className='text-center mb-6 sm:mb-8'>
             <h2 className='text-xl sm:text-2xl lg:text-3xl font-semibold text-[#494f25] mb-3 sm:mb-4'>
-              Questions? We're Here to Help
+              Questions? We&apos;re Here to Help
             </h2>
             <p className='text-sm sm:text-base lg:text-lg text-[#494f25] mb-4 sm:mb-6 leading-relaxed'>
               Get in touch with our friendly support team or explore our resources
