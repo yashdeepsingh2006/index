@@ -1,0 +1,21 @@
+Date,Product,Category,Sales,Units,Region,Salesperson
+2024-01-15,Laptop Pro,Electronics,1299.99,1,North,John Smith
+2024-01-16,Office Chair,Furniture,299.50,2,South,Sarah Johnson
+2024-01-17,Smartphone X,Electronics,899.00,3,East,Mike Brown
+2024-01-18,Standing Desk,Furniture,599.99,1,West,Emily Davis
+2024-01-19,Tablet Air,Electronics,549.99,2,North,John Smith
+2024-01-20,Gaming Mouse,Electronics,79.99,5,South,Sarah Johnson
+2024-01-21,Monitor 4K,Electronics,449.99,1,East,Mike Brown
+2024-01-22,Ergonomic Keyboard,Electronics,129.99,3,West,Emily Davis
+2024-01-23,Conference Table,Furniture,899.00,1,North,John Smith
+2024-01-24,Wireless Headphones,Electronics,199.99,4,South,Sarah Johnson
+2024-01-25,Bookshelf,Furniture,179.99,2,East,Mike Brown
+2024-01-26,USB Hub,Electronics,39.99,8,West,Emily Davis
+2024-01-27,Laptop Stand,Electronics,89.99,3,North,John Smith
+2024-01-28,Office Lamp,Furniture,69.99,4,South,Sarah Johnson
+2024-01-29,External SSD,Electronics,149.99,2,East,Mike Brown
+2024-01-30,Desk Organizer,Furniture,24.99,6,West,Emily Davis
+2024-02-01,Webcam HD,Electronics,119.99,2,North,John Smith
+2024-02-02,Filing Cabinet,Furniture,199.99,1,South,Sarah Johnson
+2024-02-03,Power Bank,Electronics,49.99,5,East,Mike Brown
+2024-02-04,Desk Mat,Furniture,29.99,3,West,Emily Davis

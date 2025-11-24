@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
 import Graphs from '@/app/components/Graphs';
+import ChatbotInterface from '@/app/components/ChatbotInterface';
 
 interface FileData {
   fileInfo: {
@@ -305,6 +306,9 @@ export default function EditFilePage(): React.JSX.Element {
         <Graphs />
 
       </div>
+      
+      {/* AI Chat Assistant */}
+      {fileData && <ChatbotInterface fileData={fileData} />}
     </div>
   );
 }
