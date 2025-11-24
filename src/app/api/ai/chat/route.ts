@@ -244,7 +244,7 @@ ${Object.entries(analysis).map(([col, stats]: [string, any]) => {
 }).join('\n')}
 
 SAMPLE RECORDS:
-${rows.slice(0, 3).map(row => JSON.stringify(row)).join('\n')}`;
+${rows.slice(0, 3).map((row: any) => JSON.stringify(row)).join('\n')}`;
 
     const prompt = `You are a RAG chatbot analyzing real data. Use ONLY the computed statistics and actual data provided above to answer questions.
 

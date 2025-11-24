@@ -264,7 +264,7 @@ export default function ChatbotInterface({ fileData }: ChatbotInterfaceProps) {
           </div>
           
           <div className="mt-2 text-xs text-[#757f31]">
-            Try: "What is the most valuable product?", "Who is the top salesperson?", "Show me total sales"
+            Try: &ldquo;What is the most valuable product?&rdquo;, &ldquo;Who is the top salesperson?&rdquo;, &ldquo;Show me total sales&rdquo;
           </div>
         </div>
       </div>
