@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "./components/Nav";
 import { SessionProvider } from "./context/SessionProvider";
 import type { Metadata } from 'next';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </div>
             </div>
           </div>
+          <SpeedInsights />
         </SessionProvider>
       </body>
     </html>
