@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getActiveProvider } from '../../../../services/settings';
 import * as XLSX from 'xlsx';
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY!);
 
 interface ParsedData {
   headers: string[];
@@ -57,7 +55,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Optional: Use AI for additional processing/validation
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const provider = await getActiveProvider();
       
       const prompt = `You are a data extraction expert. Analyze the following data and return ONLY a valid JSON object (no markdown, no backticks, no extra text).
 
@@ -78,8 +76,7 @@ Return this exact structure:
 
 Data sample: ${typeof fileContent === 'string' ? fileContent.slice(0, 500) : JSON.stringify(parsedData.rows.slice(0, 3))}`;
 
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text().trim();
+      const responseText = await provider.chat(prompt, { fileData: parsedData, fileInfo });
       
       // Clean the response to ensure it's valid JSON
       let cleanedResponse = responseText;

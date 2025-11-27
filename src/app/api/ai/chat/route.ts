@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY!);
+import { getActiveProvider } from '../../../../services/settings';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -259,9 +257,8 @@ Rules:
 
 ${dataContext}`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    const provider = await getActiveProvider();
+    const response = await provider.chat(prompt, { fileData, chatHistory });
 
     const assistantMessage: ChatMessage = {
       role: 'assistant',

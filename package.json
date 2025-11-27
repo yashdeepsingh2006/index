@@ -6,12 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "init-env": "node scripts/init-environment.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@vercel/speed-insights": "^1.2.0",
     "chart.js": "^4.5.0",
+    "groq-sdk": "^0.37.0",
     "next": "15.3.4",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
