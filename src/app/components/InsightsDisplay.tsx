@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 interface InsightCard {
   title: string;
@@ -55,7 +55,7 @@ export default function InsightsDisplay({ fileData }: InsightsDisplayProps) {
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
   const [insights, setInsights] = useState<InsightCard[] | null>(null);
 
-  const generateInsights = async () => {
+  const generateInsights = useCallback(async () => {
     if (!fileData || insights) return;
     
     setIsGeneratingInsights(true);
@@ -107,7 +107,7 @@ export default function InsightsDisplay({ fileData }: InsightsDisplayProps) {
     } finally {
       setIsGeneratingInsights(false);
     }
-  };
+  }, [fileData, insights]);
 
   const generateSalesInsight = async (rows: any[], headers: string[]) => {
     const salesCol = headers.find(h => h.toLowerCase().includes('sales') || h.toLowerCase().includes('amount') || h.toLowerCase().includes('price'));
@@ -198,7 +198,7 @@ export default function InsightsDisplay({ fileData }: InsightsDisplayProps) {
     if (fileData && !insights && !isGeneratingInsights) {
       generateInsights();
     }
-  }, [fileData, insights, isGeneratingInsights]);
+  }, [fileData, insights, isGeneratingInsights, generateInsights]);
 
   const getColumnStats = () => {
     const headers = fileData?.parsedData?.headers || [];

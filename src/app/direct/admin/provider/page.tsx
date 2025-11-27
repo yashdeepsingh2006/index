@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Header from '../../../components/Header'
@@ -33,7 +33,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
 
   // Load current provider settings
-  const loadProviderSettings = async () => {
+  const loadProviderSettings = useCallback(async () => {
     try {
       setError(null)
       const response = await fetch('/api/admin/provider', {
@@ -67,7 +67,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [router])
 
   // Save provider settings
   const saveProviderSettings = async () => {
@@ -131,7 +131,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
     }
 
     loadProviderSettings()
-  }, [session, status, router])
+  }, [session, status, router, loadProviderSettings])
 
   // Clear messages after 5 seconds
   useEffect(() => {
@@ -167,7 +167,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
             <div className="text-red-600 text-6xl mb-4">🚫</div>
             <h2 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h2>
             <p className="text-red-700 mb-4">
-              You don't have permission to access the admin panel. Please contact your administrator.
+              You don&apos;t have permission to access the admin panel. Please contact your administrator.
             </p>
             <button
               onClick={() => router.push('/')}
@@ -286,7 +286,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
             </h3>
             <p className="text-sm text-blue-800">
               {selectedProvider === 'gemini' 
-                ? 'Google\'s advanced AI model with strong reasoning capabilities and multimodal support.'
+                ? 'Google&apos;s advanced AI model with strong reasoning capabilities and multimodal support.'
                 : 'High-performance AI inference with fast response times and efficient processing.'
               }
             </p>
@@ -323,7 +323,7 @@ export default function ProviderAdminPage(): React.JSX.Element {
               <div className="flex items-center">
                 <div className="text-yellow-600 mr-2">⚠️</div>
                 <p className="text-sm text-yellow-800">
-                  You have unsaved changes. Click "Save Changes" to apply the new provider selection.
+                  You have unsaved changes. Click &quot;Save Changes&quot; to apply the new provider selection.
                 </p>
               </div>
             </div>
