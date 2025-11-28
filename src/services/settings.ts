@@ -4,9 +4,10 @@ import type { ProviderType } from './providers/interface';
 import { GeminiProvider } from './providers/gemini';
 import { GroqProvider } from './providers/groq';
 import type { AIProvider } from './providers/interface';
+import clientPromise from '../lib/mongodb';
 
 /**
- * Interface for provider settings stored in JSON
+ * Interface for provider settings stored in database
  */
 export interface ProviderSettings {
   activeProvider: ProviderType;
@@ -15,7 +16,17 @@ export interface ProviderSettings {
 }
 
 /**
- * Default settings used when no configuration file exists
+ * Interface for MongoDB document
+ */
+interface ProviderSettingsDocument {
+  _id: string;
+  activeProvider: ProviderType;
+  lastUpdated: string;
+  updatedBy: string;
+}
+
+/**
+ * Default settings used when no configuration exists
  */
 const DEFAULT_SETTINGS: ProviderSettings = {
   activeProvider: 'gemini',
@@ -24,30 +35,104 @@ const DEFAULT_SETTINGS: ProviderSettings = {
 };
 
 /**
- * Service class for managing provider settings with JSON file storage
- * Provides atomic operations and error handling for settings persistence
+ * Service class for managing provider settings with MongoDB storage
+ * Falls back to file system in development if MongoDB is not available
  */
 export class SettingsService {
   private static readonly SETTINGS_DIR = 'data';
   private static readonly SETTINGS_FILE = 'provider-settings.json';
-  private static readonly BACKUP_FILE = 'provider-settings.backup.json';
+  private static readonly COLLECTION_NAME = 'provider_settings';
+  private static readonly DOCUMENT_ID = 'active_provider_config';
 
   /**
-   * Get the full path to the settings file
+   * Check if MongoDB is available
+   */
+  private static async isMongoAvailable(): Promise<boolean> {
+    try {
+      if (!process.env.MONGODB_URI) {
+        return false;
+      }
+      const client = await clientPromise;
+      if (!client) {
+        return false;
+      }
+      // Test the connection
+      await client.db().admin().ping();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Load settings from MongoDB
+   */
+  private static async loadFromMongo(): Promise<ProviderSettings | null> {
+    try {
+      const client = await clientPromise;
+      if (!client) {
+        return null;
+      }
+      
+      const db = client.db();
+      const collection = db.collection<ProviderSettingsDocument>(this.COLLECTION_NAME);
+      
+      const document = await collection.findOne({ _id: this.DOCUMENT_ID });
+      
+      if (document && this.validateSettings(document)) {
+        return {
+          activeProvider: document.activeProvider,
+          lastUpdated: document.lastUpdated,
+          updatedBy: document.updatedBy
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error loading settings from MongoDB:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save settings to MongoDB
+   */
+  private static async saveToMongo(settings: ProviderSettings): Promise<void> {
+    try {
+      const client = await clientPromise;
+      if (!client) {
+        throw new Error('MongoDB client not available');
+      }
+      
+      const db = client.db();
+      const collection = db.collection<ProviderSettingsDocument>(this.COLLECTION_NAME);
+      
+      await collection.replaceOne(
+        { _id: this.DOCUMENT_ID },
+        {
+          activeProvider: settings.activeProvider,
+          lastUpdated: settings.lastUpdated,
+          updatedBy: settings.updatedBy
+        },
+        { upsert: true }
+      );
+      
+      console.info('Settings saved to MongoDB successfully');
+    } catch (error) {
+      console.error('Error saving settings to MongoDB:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the full path to the settings file (fallback)
    */
   private static getSettingsPath(): string {
     return path.join(process.cwd(), this.SETTINGS_DIR, this.SETTINGS_FILE);
   }
 
   /**
-   * Get the full path to the backup settings file
-   */
-  private static getBackupPath(): string {
-    return path.join(process.cwd(), this.SETTINGS_DIR, this.BACKUP_FILE);
-  }
-
-  /**
-   * Ensure the data directory exists
+   * Ensure the data directory exists (fallback)
    */
   private static async ensureDataDirectory(): Promise<void> {
     const dataDir = path.join(process.cwd(), this.SETTINGS_DIR);
@@ -55,6 +140,44 @@ export class SettingsService {
       await fs.access(dataDir);
     } catch {
       await fs.mkdir(dataDir, { recursive: true });
+    }
+  }
+
+  /**
+   * Load settings from file system (fallback)
+   */
+  private static async loadFromFile(): Promise<ProviderSettings | null> {
+    try {
+      await this.ensureDataDirectory();
+      const settingsPath = this.getSettingsPath();
+      
+      const fileContent = await fs.readFile(settingsPath, 'utf-8');
+      const parsedSettings = JSON.parse(fileContent);
+      
+      if (this.validateSettings(parsedSettings)) {
+        return parsedSettings;
+      }
+      
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Save settings to file system (fallback)
+   */
+  private static async saveToFile(settings: ProviderSettings): Promise<void> {
+    try {
+      await this.ensureDataDirectory();
+      const settingsPath = this.getSettingsPath();
+      const settingsJson = JSON.stringify(settings, null, 2);
+      
+      await fs.writeFile(settingsPath, settingsJson, 'utf-8');
+      console.info('Settings saved to file successfully');
+    } catch (error) {
+      console.error('Error saving settings to file:', error);
+      throw error;
     }
   }
 
@@ -73,33 +196,29 @@ export class SettingsService {
   }
 
   /**
-   * Load provider settings from JSON file
-   * Returns default settings if file doesn't exist or is invalid
+   * Load provider settings from MongoDB or fallback to file system
+   * Returns default settings if no storage is available
    */
   static async loadSettings(): Promise<ProviderSettings> {
     try {
-      await this.ensureDataDirectory();
-      const settingsPath = this.getSettingsPath();
-      
-      try {
-        const fileContent = await fs.readFile(settingsPath, 'utf-8');
-        const parsedSettings = JSON.parse(fileContent);
-        
-        if (this.validateSettings(parsedSettings)) {
-          return parsedSettings;
-        } else {
-          console.warn('Invalid settings format, using defaults');
-          return DEFAULT_SETTINGS;
+      // Try MongoDB first
+      if (await this.isMongoAvailable()) {
+        const mongoSettings = await this.loadFromMongo();
+        if (mongoSettings) {
+          return mongoSettings;
         }
-      } catch (error) {
-        // File doesn't exist or is corrupted, return defaults
-        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-          console.info('Settings file not found, using defaults');
-        } else {
-          console.warn('Error reading settings file, using defaults:', error);
-        }
-        return DEFAULT_SETTINGS;
       }
+      
+      // Fallback to file system
+      const fileSettings = await this.loadFromFile();
+      if (fileSettings) {
+        return fileSettings;
+      }
+      
+      // Return defaults if nothing found
+      console.info('No settings found, using defaults');
+      return DEFAULT_SETTINGS;
+      
     } catch (error) {
       console.error('Error loading settings:', error);
       return DEFAULT_SETTINGS;
@@ -107,8 +226,7 @@ export class SettingsService {
   }
 
   /**
-   * Save provider settings to JSON file with atomic operations
-   * Creates a backup before writing to prevent data loss
+   * Save provider settings to MongoDB or fallback to file system
    */
   static async saveSettings(settings: ProviderSettings): Promise<void> {
     if (!this.validateSettings(settings)) {
@@ -116,25 +234,15 @@ export class SettingsService {
     }
 
     try {
-      await this.ensureDataDirectory();
-      const settingsPath = this.getSettingsPath();
-      const backupPath = this.getBackupPath();
-      const settingsJson = JSON.stringify(settings, null, 2);
-
-      // Create backup of existing settings if file exists
-      try {
-        await fs.access(settingsPath);
-        await fs.copyFile(settingsPath, backupPath);
-      } catch {
-        // File doesn't exist, no backup needed
+      // Try MongoDB first
+      if (await this.isMongoAvailable()) {
+        await this.saveToMongo(settings);
+        return;
       }
-
-      // Write new settings atomically by writing to temp file first
-      const tempPath = settingsPath + '.tmp';
-      await fs.writeFile(tempPath, settingsJson, 'utf-8');
-      await fs.rename(tempPath, settingsPath);
-
-      console.info('Settings saved successfully');
+      
+      // Fallback to file system
+      await this.saveToFile(settings);
+      
     } catch (error) {
       console.error('Error saving settings:', error);
       throw new Error(`Failed to save settings: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -142,19 +250,18 @@ export class SettingsService {
   }
 
   /**
-   * Initialize settings with default values if no settings file exists
-   * This is useful for first-time setup
+   * Initialize settings with default values if no settings exist
    */
   static async initializeSettings(): Promise<ProviderSettings> {
     const currentSettings = await this.loadSettings();
     
-    // If we got default settings (file didn't exist), save them to create the file
+    // If we got default settings (nothing exists), save them
     if (currentSettings.updatedBy === 'system' && currentSettings.activeProvider === 'gemini') {
       try {
         await this.saveSettings(currentSettings);
-        console.info('Initialized default settings file');
+        console.info('Initialized default settings');
       } catch (error) {
-        console.warn('Could not initialize settings file:', error);
+        console.warn('Could not initialize settings:', error);
       }
     }
     
