@@ -27,6 +27,20 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
+      <head>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-298J1J1YN4');
+            `,
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider>
           <div className="bg-white min-h-screen">
