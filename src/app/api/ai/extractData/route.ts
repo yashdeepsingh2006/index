@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getActiveProvider } from '../../../../services/settings';
+import { extractDataInsights } from '@/services/aiServices';
 import * as XLSX from 'xlsx';
 
 interface ParsedData {
@@ -53,47 +53,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Unsupported file format' }, { status: 400 });
     }
 
-    // Optional: Use AI for additional processing/validation
+    // Use clean AI service for insights
     try {
-      const provider = await getActiveProvider();
+      const csvSample = parsedData.rows.slice(0, 5)
+        .map(row => Object.values(row).join(','))
+        .join('\n');
       
-      const prompt = `You are a data extraction expert. Analyze the following data and return ONLY a valid JSON object (no markdown, no backticks, no extra text).
-
-Return this exact structure:
-{
-  "fileInfo": {
-    "name": "${file.name}",
-    "type": "${file.type || 'unknown'}",
-    "size": ${file.size}
-  },
-  "extractedData": {
-    "summary": "Brief description of the data",
-    "xAxis": "suggested column name for x-axis",
-    "yAxis": "suggested column name for y-axis",
-    "chartType": "bar|line|pie|scatter"
-  }
-}
-
-Data sample: ${typeof fileContent === 'string' ? fileContent.slice(0, 500) : JSON.stringify(parsedData.rows.slice(0, 3))}`;
-
-      const responseText = await provider.chat(prompt, { fileData: parsedData, fileInfo });
-      
-      // Clean the response to ensure it's valid JSON
-      let cleanedResponse = responseText;
-      if (cleanedResponse.startsWith('```json')) {
-        cleanedResponse = cleanedResponse.replace(/```json\s*/, '').replace(/\s*```$/, '');
-      } else if (cleanedResponse.startsWith('```')) {
-        cleanedResponse = cleanedResponse.replace(/```[a-zA-Z]*\s*/, '').replace(/\s*```$/, '');
-      }
-      
-      const aiInsights = JSON.parse(cleanedResponse);
-      
-      // Add AI insights to metadata
-      parsedData.aiInsights = aiInsights;
+      const insights = await extractDataInsights(csvSample, file.name);
+      parsedData.aiInsights = insights;
     } catch (aiError) {
-      const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown error';
-      console.log('AI processing skipped:', errorMessage);
-      // Continue without AI insights if it fails
+      console.log('AI processing skipped:', aiError);
       parsedData.aiInsights = null;
     }
 

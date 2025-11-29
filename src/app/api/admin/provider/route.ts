@@ -99,11 +99,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get current settings to preserve feature flags
+    const currentSettings = await SettingsService.loadSettings()
+    
     // Create new settings object
     const newSettings = {
       activeProvider: provider as 'gemini' | 'groq',
       lastUpdated: new Date().toISOString(),
-      updatedBy: authResult.user?.email || 'unknown'
+      updatedBy: authResult.user?.email || 'unknown',
+      featureFlags: currentSettings.featureFlags // Preserve existing feature flags
     }
 
     // Save the new settings

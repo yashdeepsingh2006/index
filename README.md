@@ -1,199 +1,295 @@
-# AI-Powered Data Visualization Platform
+# AI-Powered Enterprise Data Analytics Platform
 
-A modern Next.js application that enables users to upload data files (CSV, JSON, Excel), extract structured data using Google's Generative AI, and visualize the results with interactive charts.
+A production-ready Next.js application with advanced AI provider switching, comprehensive caching, rate limiting, monitoring, and fallback systems. Upload data files, get AI-powered insights, and interact with your data through an intelligent chat interface.
 
-## 🚀 Features
+## 🚀 Key Features
 
-- **File Upload & Processing**: Support for CSV, JSON, and Excel files
-- **AI-Powered Data Extraction**: Uses Google Gemini AI to intelligently parse and structure data
-- **Interactive Visualizations**: Dynamic charts and graphs using Chart.js
-- **Google Authentication**: Secure user authentication with NextAuth
-- **Real-time Processing**: Live data processing and visualization updates
-- **Responsive Design**: Mobile-friendly interface
+### 🔄 **Dual AI Provider System**
+- **Groq** (Llama 3.3-70B) and **Gemini 2.5 Flash** integration
+- **Automatic failover** - If one provider fails, seamlessly switches to the other
+- **Admin panel** for real-time provider switching
+- **Production reliability** with retries, timeouts, and graceful degradation
+
+### ⚡ **Enterprise-Grade Performance**
+- **MongoDB-based caching** - Prevents expensive duplicate AI calls
+- **Hash-based cache keys** - Same file content = instant results
+- **User-specific caching** - Per-user cache isolation
+- **24-hour TTL** with automatic cleanup
+
+### 🛡️ **Production Security & Reliability**
+- **Rate limiting** - Per IP, per endpoint protection
+- **Smart limits**: Chat (30/min), Upload (5/min), Data Extraction (10/min)
+- **Feature flags** - Toggle features on/off without deployment
+- **Real-time monitoring** dashboard with success rates and performance metrics
+
+### 🧠 **Advanced AI Capabilities**
+- **Structured data insights** generation
+- **Interactive chat** with your data using RAG
+- **Data extraction** and analysis
+- **Isolated prompt templates** for maintainable AI interactions
+- **JSON validation** and response normalization
+
+### 📊 **Data Processing**
+- **Multi-format support**: CSV, Excel, JSON
+- **Interactive visualizations** with Chart.js
+- **Real-time data analysis** and insights
+- **Export capabilities**
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React, TailwindCSS
-- **Authentication**: NextAuth.js with Google OAuth
-- **AI Integration**: Google Generative AI (Gemini)
-- **Charts**: Chart.js with React wrapper
-- **File Processing**: xlsx for Excel files
-- **Deployment**: Vercel-ready
+**Core Framework:**
+- **Next.js 15.3.4** - React framework with API routes
+- **TypeScript** - Type-safe development
+- **TailwindCSS** - Modern styling
 
-## 📦 Installation
+**AI & Analytics:**
+- **Groq SDK** - Llama 3.3-70B integration
+- **Google Generative AI** - Gemini 2.5 Flash
+- **Custom LLM dispatcher** - Unified AI interface
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd index
-   ```
+**Database & Caching:**
+- **MongoDB Atlas** - Production database
+- **Hash-based caching** - Performance optimization
+- **Rate limiting storage** - Abuse prevention
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+**Authentication & Security:**
+- **NextAuth.js** - Google OAuth integration
+- **Admin authentication** - Secure provider management
+- **Session management**
 
-3. **Set up environment variables**
-   
-   Create a `.env.local` file in the root directory:
-   ```env
-   # Google AI Configuration
-   GOOGLE_GENAI_API_KEY=your_google_ai_api_key
-   
-   # Google OAuth Configuration
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   
-   # NextAuth Configuration
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXTAUTH_URL=http://localhost:3000
-   ```
+**Monitoring & Reliability:**
+- **Real-time monitoring** - Request tracking and metrics
+- **Feature flags system** - Live feature control
+- **Automatic failover** - Multi-provider reliability
 
-4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 🔧 Required Dependencies
-
-```bash
-# Core dependencies
-npm install next react react-dom next-auth @auth/google-provider chart.js react-chartjs-2 xlsx @google/generative-ai
-```
-
-## 🏗️ Project Structure
-
-```
-src/
-├── app/
-│   ├── api/
-│   │   └── ai/
-│   │       └── extractData/
-│   │           └── route.js          # AI data extraction API
-│   ├── components/
-│   │   ├── Header.js                 # Navigation component
-│   │   └── Graphs.js                 # Chart visualization component
-│   ├── direct/
-│   │   └── report/
-│   │       └── page.js               # Data visualization page
-│   └── page.js                       # Home page
-├── .env.local                        # Environment variables
-└── next.config.js                    # Next.js configuration
-```
-
-## 🚀 Getting Started
+## 📦 Installation & Setup
 
 ### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- Google AI Studio API key
+- Groq API key
+- Google OAuth credentials
 
-- Node.js 18+ 
-- npm or yarn
-- Google Cloud account (for AI API)
-- Google OAuth app credentials
+### 1. Clone & Install
+```bash
+git clone <repository-url>
+cd index
+npm install
+```
 
-### Setup Instructions
+### 2. Environment Configuration
 
-1. **Google AI API Setup**
-   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create an API key for Gemini
-   - Add it to your `.env.local` file
+Create `.env.local`:
+```env
+# AI Provider Configuration
+GROQ_API_KEY=your_groq_api_key
+GEMINI_API_KEY=your_gemini_api_key
 
-2. **Google OAuth Setup**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create OAuth 2.0 credentials
-   - Add authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+# MongoDB Configuration (Required for production features)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
 
-3. **NextAuth Secret**
-   ```bash
-   # Generate a secret
-   openssl rand -base64 32
-   ```
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-## 🤝 Contributing
+# NextAuth
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
 
-We welcome contributions! Please follow these steps:
+# Google Analytics (Optional)
+NEXT_PUBLIC_GA_ID=your_ga_tracking_id
+```
 
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make your changes**
-4. **Commit your changes**
-   ```bash
-   git commit -m "Add: your feature description"
-   ```
-5. **Push to your branch**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-6. **Open a Pull Request**
+### 3. Run Development Server
+```bash
+npm run dev
+```
 
-### Development Guidelines
+### 4. Access the Application
+- **Main App**: http://localhost:3000
+- **Admin Panel**: http://localhost:3000/direct/admin/provider
+- **Monitoring Dashboard**: http://localhost:3000/direct/admin/monitoring
 
-- Follow existing code style and conventions
-- Add comments for complex logic
-- Test your changes thoroughly
-- Update documentation if needed
+## 🏗️ Production Architecture
 
-## 📝 API Endpoints
+### System Overview
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Rate Limiter  │ -> │   LLM Dispatcher │ -> │  Cache Service  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                │
+                      ┌─────────┴─────────┐
+                      │                   │
+                ┌─────────────┐    ┌─────────────┐
+                │ Groq Provider│    │Gemini Provider│
+                │(Llama 3.3)  │    │(Gemini 2.5) │
+                └─────────────┘    └─────────────┘
+```
 
-### POST `/api/ai/extractData`
-Processes uploaded files and extracts structured data using AI.
+### Core Services
 
-**Request:**
-- Method: POST
-- Content-Type: multipart/form-data
-- Body: file (CSV, JSON, or Excel)
+**`/services/llm.ts`** - Unified LLM dispatcher with fallback logic
+**`/services/cache.ts`** - MongoDB-based caching system
+**`/services/rateLimit.ts`** - IP-based rate limiting
+**`/services/monitoring.ts`** - Performance and usage tracking
+**`/services/featureFlags.ts`** - Live feature control
+**`/prompts/`** - Isolated prompt templates
 
-**Response:**
-```json
-{
-  "fileInfo": {
-    "name": "filename.csv",
-    "type": "text/csv",
-    "size": 1024
-  },
-  "parsedData": {
-    "headers": ["col1", "col2"],
-    "rows": [["val1", "val2"]]
-  },
-  "metadata": {
-    "processedAt": "2025-06-29T...",
-    "fileType": "csv"
+### API Endpoints
+
+#### **Core Data Processing**
+- `POST /api/upload` - File upload with AI insights generation
+- `POST /api/ai/chat` - Interactive data chat
+- `POST /api/ai/extractData` - Data extraction and analysis
+
+#### **Admin Management**
+- `GET/POST /api/admin/provider` - AI provider switching
+- `GET/POST /api/admin/features` - Feature flag management  
+- `GET /api/admin/monitoring` - System metrics and logs
+
+## 🚀 Production Features
+
+### 1. **Hash-Based Caching**
+```javascript
+// Automatic cache for identical requests
+const cacheKey = CacheService.generateHash(fileContent, userId);
+const cached = await CacheService.get(cacheKey);
+if (cached) return cached; // Instant response
+```
+
+### 2. **Rate Limiting**
+```javascript
+// Per-endpoint limits
+const limits = {
+  '/api/ai/chat': { maxRequests: 30, windowMinutes: 1 },
+  '/api/upload': { maxRequests: 5, windowMinutes: 1 }
+};
+```
+
+### 3. **Fallback Strategy**
+```javascript
+// Automatic provider switching
+if (groq_fails) {
+  try_gemini();
+  if (both_fail) {
+    return "AI temporarily unavailable. Try again in 10-20 seconds.";
   }
 }
 ```
 
-## 🐛 Known Issues
+### 4. **Feature Flags**
+```javascript
+// Live feature control
+const isEnabled = await FeatureFlagsService.isEnabled('useInsights');
+if (!isEnabled) throw new Error('Feature temporarily disabled');
+```
 
-- Large Excel files (>10MB) may timeout during processing
-- AI processing requires valid Google AI API key
-- Chart rendering may be slow with large datasets
+## 📊 Admin Dashboard Features
 
-## 🔗 Useful Links
+### Monitoring Dashboard (`/direct/admin/monitoring`)
+- **Real-time metrics**: Success rate, response time, request count
+- **Provider usage**: Groq vs Gemini performance comparison
+- **Recent requests**: Last 20 requests with full details
+- **Feature flags**: Live toggle switches for all features
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Google Generative AI](https://ai.google.dev/)
-- [Chart.js Documentation](https://www.chartjs.org/docs/)
-- [NextAuth.js Documentation](https://next-auth.js.org/)
+### Provider Management (`/direct/admin/provider`)
+- **Live provider switching**: Groq ↔ Gemini
+- **Provider status monitoring**
+- **Configuration management**
 
-## 📄 License
+## 🔧 Configuration
 
-This project is open source and available under the [MIT License](LICENSE).
+### Rate Limits (Customizable)
+```typescript
+const RATE_LIMITS = {
+  '/api/ai/chat': { maxRequests: 30, windowMinutes: 1 },
+  '/api/ai/extractData': { maxRequests: 10, windowMinutes: 1 },
+  '/api/upload': { maxRequests: 5, windowMinutes: 1 }
+};
+```
+
+### Cache Settings
+```typescript
+// Default cache TTL: 24 hours
+await CacheService.set(key, result, userId, 24);
+```
+
+### Feature Flags
+```typescript
+{
+  useInsights: true,    // Data insights generation
+  useChat: true,        // Interactive chat
+  useExtraction: true,  // Data extraction
+  useCache: true,       // Performance caching
+  useRateLimit: true    // Rate limiting protection
+}
+```
+
+## 🚨 Production Reliability
+
+### Error Handling
+- **Graceful degradation**: System continues working if one provider fails
+- **Fallback messages**: User-friendly responses instead of crashes
+- **Comprehensive logging**: Full request/response tracking
+- **Monitoring alerts**: Real-time failure detection
+
+### Performance Optimization
+- **Caching prevents redundant AI calls** (saves $$$ on API costs)
+- **Rate limiting prevents server overload**
+- **Connection pooling** for MongoDB
+- **Timeout management** (12-second limits)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**AI Provider Failures:**
+- Check `/direct/admin/monitoring` for provider status
+- Switch providers via admin panel if needed
+- Both providers failing = quota/API key issues
+
+**Caching Issues:**
+- Verify MongoDB connection in logs
+- Check cache hit/miss rates in monitoring
+- Clear expired cache: `MonitoringService.cleanup()`
+
+**Rate Limit Blocks:**
+- Adjust limits in `/services/rateLimit.ts`
+- Check IP whitelisting needs
+- Monitor usage patterns in admin dashboard
+
+## 🔗 Production Deployment
+
+### Build & Deploy
+```bash
+npm run build
+npm start
+```
+
+### Environment Variables (Production)
+```env
+NODE_ENV=production
+MONGODB_URI=mongodb+srv://...  # Required for all production features
+GROQ_API_KEY=...               # Groq provider
+GEMINI_API_KEY=...             # Gemini provider
+NEXTAUTH_URL=https://yourdomain.com
+```
+
+### Monitoring Setup
+- **MongoDB Atlas**: Database monitoring
+- **Vercel Analytics**: Frontend performance
+- **Custom monitoring**: `/direct/admin/monitoring`
 
 ## 🙏 Acknowledgments
 
-- Google Generative AI for intelligent data processing
-- Chart.js community for visualization components
-- NextAuth.js for authentication
-- Vercel for hosting platform
+- **Groq** - Fast LLM inference
+- **Google AI** - Gemini model access
+- **MongoDB Atlas** - Reliable database hosting
+- **Vercel** - Seamless deployment platform
 
 ---
 
-**Happy Contributing! 🎉**
+**🎉 Production-Ready AI Analytics Platform**
 
-For questions or support, please open an issue or reach out
+Built for enterprise use with reliability, monitoring, and performance optimization as core principles.

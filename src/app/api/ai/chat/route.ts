@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getActiveProvider } from '../../../../services/settings';
+import { generateChatResponse } from '@/services/aiServices';
+import { withRateLimit } from '@/middleware/rateLimit';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -186,98 +187,114 @@ function answerQuestion(question: string, analysis: any, rows: any[], headers: s
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  try {
-    const { message, fileData, chatHistory = [] }: ChatRequest = await request.json();
+  return withRateLimit(request, async () => {
+    try {
+      const { message, fileData, chatHistory = [] }: ChatRequest = await request.json();
 
-    if (!message || !fileData) {
-      return NextResponse.json({ error: 'Message and file data are required' }, { status: 400 });
+      if (!message || !fileData) {
+        return NextResponse.json({ error: 'Message and file data are required' }, { status: 400 });
+      }
+
+      // Input validation
+      if (message.length > 1000) {
+        return NextResponse.json(
+          { error: 'Message too long (max 1000 characters)' },
+          { status: 400 }
+        );
+      }
+
+      const rows = fileData.parsedData?.rows || [];
+      const headers = fileData.parsedData?.headers || [];
+      
+      if (rows.length === 0) {
+        return NextResponse.json({
+          message: {
+            role: 'assistant',
+            content: 'No data found to analyze. Please upload a valid data file.',
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+
+      // Perform actual data analysis
+      const analysis = calculateDataAnalysis(rows, headers);
+      
+  // Try to answer with computed results first
+  const computedAnswer = answerQuestion(message, analysis, rows, headers);
+  
+  // Always use AI for better answers, don't return the basic computed answer
+  // if (!computedAnswer.includes('Please ask specific questions')) {
+  //   return NextResponse.json({
+  //     message: {
+  //       role: 'assistant',
+  //       content: computedAnswer,
+  //       timestamp: new Date().toISOString()
+  //     },
+  //     success: true
+  //   });
+  // }      // For complex questions, use AI with actual computed data
+      const dataContext = `
+  DATASET ANALYSIS:
+  - File: ${fileData.fileInfo?.name}
+  - Rows: ${rows.length}
+  - Columns: ${headers.join(', ')}
+
+  COMPUTED STATISTICS:
+  ${Object.entries(analysis).map(([col, stats]: [string, any]) => {
+    if (stats.type === 'numeric') {
+      return `${col}: Total=${stats.sum.toFixed(2)}, Average=${stats.average.toFixed(2)}, Min=${stats.min}, Max=${stats.max}`;
+    } else {
+      const topValues = Object.entries(stats.valueCounts).sort(([,a], [,b]) => (b as number) - (a as number)).slice(0, 3);
+      return `${col}: ${stats.uniqueCount} unique values, Top: ${topValues.map(([k,v]) => `${k}(${v})`).join(', ')}`;
     }
+  }).join('\n')}
 
-    const rows = fileData.parsedData?.rows || [];
-    const headers = fileData.parsedData?.headers || [];
-    
-    if (rows.length === 0) {
-      return NextResponse.json({
-        message: {
-          role: 'assistant',
-          content: 'No data found to analyze. Please upload a valid data file.',
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
+  SAMPLE RECORDS:
+  ${rows.slice(0, 3).map((row: any) => JSON.stringify(row)).join('\n')}`;
 
-    // Perform actual data analysis
-    const analysis = calculateDataAnalysis(rows, headers);
-    
-    // Try to answer with computed results first
-    const computedAnswer = answerQuestion(message, analysis, rows, headers);
-    
-    // If we have a specific computed answer, return it
-    if (!computedAnswer.includes('Please ask specific questions')) {
-      return NextResponse.json({
-        message: {
-          role: 'assistant',
-          content: computedAnswer,
-          timestamp: new Date().toISOString()
-        },
-        success: true
-      });
-    }
-    
-    // For complex questions, use AI with actual computed data
-    const dataContext = `
-DATASET ANALYSIS:
-- File: ${fileData.fileInfo?.name}
-- Rows: ${rows.length}
-- Columns: ${headers.join(', ')}
-
-COMPUTED STATISTICS:
-${Object.entries(analysis).map(([col, stats]: [string, any]) => {
-  if (stats.type === 'numeric') {
-    return `${col}: Total=${stats.sum.toFixed(2)}, Average=${stats.average.toFixed(2)}, Min=${stats.min}, Max=${stats.max}`;
-  } else {
-    const topValues = Object.entries(stats.valueCounts).sort(([,a], [,b]) => (b as number) - (a as number)).slice(0, 3);
-    return `${col}: ${stats.uniqueCount} unique values, Top: ${topValues.map(([k,v]) => `${k}(${v})`).join(', ')}`;
-  }
-}).join('\n')}
-
-SAMPLE RECORDS:
-${rows.slice(0, 3).map((row: any) => JSON.stringify(row)).join('\n')}`;
-
-    const prompt = `You are a RAG chatbot analyzing real data. Use ONLY the computed statistics and actual data provided above to answer questions.
+      const prompt = `You are a direct business analyst. Answer the question with ONE decisive sentence.
 
 USER QUESTION: ${message}
 
-Rules:
-1. ALWAYS use actual numbers and values from the computed statistics
-2. Be specific and reference real data points
-3. Don't make assumptions - only use provided calculations
-4. Format numbers properly (currencies with $ sign)
-5. Keep answers concise but data-driven
+RULES:
+- Give ONE clear answer, not a list
+- Be decisive: "X is better" not "X has more items"
+- Use actual numbers only when necessary
+- No bullet points or breakdowns
 
-${dataContext}`;
+${dataContext}
 
-    const provider = await getActiveProvider();
-    const response = await provider.chat(prompt, { fileData, chatHistory });
+Answer in one sentence:`;
 
-    const assistantMessage: ChatMessage = {
-      role: 'assistant',
-      content: response,
-      timestamp: new Date().toISOString()
-    };
+      const response = await generateChatResponse(prompt);
 
-    return NextResponse.json({ 
-      message: assistantMessage,
-      success: true 
-    });
+      const assistantMessage: ChatMessage = {
+        role: 'assistant',
+        content: response,
+        timestamp: new Date().toISOString()
+      };
 
-  } catch (error) {
-    console.error('Chat API error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to process chat message';
-    
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
-  }
+      return NextResponse.json({ 
+        message: assistantMessage,
+        success: true 
+      });
+
+    } catch (error) {
+      console.error('Chat API error:', error);
+      
+      if (error instanceof Error && error.message.includes('feature is currently disabled')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 503 }
+        );
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process chat message';
+      
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 500 }
+      );
+    }
+  });
 }

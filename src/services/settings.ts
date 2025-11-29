@@ -5,6 +5,7 @@ import { GeminiProvider } from './providers/gemini';
 import { GroqProvider } from './providers/groq';
 import type { AIProvider } from './providers/interface';
 import clientPromise from '../lib/mongodb';
+import type { FeatureFlags } from './featureFlags';
 
 /**
  * Interface for provider settings stored in database
@@ -13,6 +14,7 @@ export interface ProviderSettings {
   activeProvider: ProviderType;
   lastUpdated: string;
   updatedBy: string;
+  featureFlags: FeatureFlags;
 }
 
 /**
@@ -23,6 +25,7 @@ interface ProviderSettingsDocument {
   activeProvider: ProviderType;
   lastUpdated: string;
   updatedBy: string;
+  featureFlags: FeatureFlags;
 }
 
 /**
@@ -31,7 +34,14 @@ interface ProviderSettingsDocument {
 const DEFAULT_SETTINGS: ProviderSettings = {
   activeProvider: 'gemini',
   lastUpdated: new Date().toISOString(),
-  updatedBy: 'system'
+  updatedBy: 'system',
+  featureFlags: {
+    useInsights: true,
+    useChat: true,
+    useExtraction: true,
+    useCache: true,
+    useRateLimit: true
+  }
 };
 
 /**
@@ -83,7 +93,14 @@ export class SettingsService {
         return {
           activeProvider: document.activeProvider,
           lastUpdated: document.lastUpdated,
-          updatedBy: document.updatedBy
+          updatedBy: document.updatedBy,
+          featureFlags: document.featureFlags || {
+            useInsights: true,
+            useChat: true,
+            useExtraction: true,
+            useCache: true,
+            useRateLimit: true
+          }
         };
       }
       
@@ -112,7 +129,8 @@ export class SettingsService {
         {
           activeProvider: settings.activeProvider,
           lastUpdated: settings.lastUpdated,
-          updatedBy: settings.updatedBy
+          updatedBy: settings.updatedBy,
+          featureFlags: settings.featureFlags
         },
         { upsert: true }
       );
@@ -192,6 +210,7 @@ export class SettingsService {
       (settings.activeProvider === 'gemini' || settings.activeProvider === 'groq') &&
       typeof settings.lastUpdated === 'string' &&
       typeof settings.updatedBy === 'string'
+      // featureFlags is optional for backward compatibility
     );
   }
 
@@ -212,7 +231,17 @@ export class SettingsService {
       // Fallback to file system
       const fileSettings = await this.loadFromFile();
       if (fileSettings) {
-        return fileSettings;
+        // Add default feature flags if missing
+        return {
+          ...fileSettings,
+          featureFlags: fileSettings.featureFlags || {
+            useInsights: true,
+            useChat: true,
+            useExtraction: true,
+            useCache: true,
+            useRateLimit: true
+          }
+        };
       }
       
       // Return defaults if nothing found
