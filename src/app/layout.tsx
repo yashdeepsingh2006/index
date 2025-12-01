@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   verification: {
-    google: "your-google-verification-code",
+    google: "_Po_b4V16HeOD3I1GitERw51eWKHcXEWY1gh0DsoH00",
   },
   category: "Technology",
   classification: "Business Intelligence Software",
