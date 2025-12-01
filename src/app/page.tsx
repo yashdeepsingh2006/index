@@ -16,7 +16,7 @@ export default function Home(): React.JSX.Element {
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f9f9ec]">
-        <Loading />
+        <div className="loading-skeleton w-96 h-32 rounded-lg"></div>
       </div>
     );
   }

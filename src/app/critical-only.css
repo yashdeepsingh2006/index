@@ -1,0 +1,15 @@
+/* Minimal Tailwind CSS for critical path only */
+@tailwind utilities;
+
+/* Override only essential classes */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.min-h-screen { min-height: 100vh; }
+.bg-white { background: white; }
+.text-center { text-align: center; }
+.p-4 { padding: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
+.rounded { border-radius: 0.25rem; }
+.shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }

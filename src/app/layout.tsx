@@ -152,31 +152,48 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {/* Critical CSS Inline - No render blocking */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            :root{--background:#ffffff;--foreground:#171717;--font-sans:var(--font-geist-sans)}
+            *{box-sizing:border-box}
+            body,html{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+            :root{--background:#ffffff;--foreground:#171717}
             @media (prefers-color-scheme:dark){:root{--background:#0a0a0a;--foreground:#ededed}}
-            body{background:var(--background);color:var(--foreground);font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,sans-serif;margin:0;padding:0;min-height:100vh}
-            .nav-container{position:fixed;top:0;left:0;right:0;z-index:50;background:white;border-bottom:1px solid #e5e7eb}
-            .main-content{padding-top:4rem}
-            @media (max-width:1023px){.nav-container{height:4rem}}
+            body{background:var(--background);color:var(--foreground);min-height:100vh}
+            .nav-container{position:fixed;top:0;left:0;right:0;z-index:50;background:white;border-bottom:1px solid #e5e7eb;height:4rem}
+            .main-content{padding-top:4rem;min-height:100vh}
             @media (min-width:1024px){.nav-container{position:fixed;width:20%;height:100vh;border-right:1px solid #e5e7eb;border-bottom:none}.main-content{margin-left:20%;width:80%;padding-top:0}}
+            .flex{display:flex}
+            .flex-col{flex-direction:column}
+            .items-center{align-items:center}
+            .justify-center{justify-content:center}
+            .min-h-screen{min-height:100vh}
+            .bg-white{background:white}
+            .bg-\\[\\#f9f9ec\\]{background:#f9f9ec}
+            .text-\\[\\#596229\\]{color:#596229}
+            .loading-skeleton{background:#f0f0f0;animation:pulse 1.5s infinite}
+            @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+            .w-96{width:24rem}
+            .h-32{height:8rem}
+            .rounded-lg{border-radius:0.5rem}
+            .p-4{padding:1rem}
+            .mb-4{margin-bottom:1rem}
+            .text-center{text-align:center}
           `
         }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased`}>
-        {/* Optimized Google Analytics - Deferred for mobile performance */}
+        {/* Analytics moved to bottom - minimal impact on LCP */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
+          defer
         />
-        <Script id="google-analytics-init" strategy="lazyOnload">
+        <Script id="google-analytics-init" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-298J1J1YN4', {
-              page_title: document.title,
-              page_location: window.location.href,
-            });
+            setTimeout(() => {
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-298J1J1YN4');
+            }, 3000);
           `}
         </Script>
         

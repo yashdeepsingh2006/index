@@ -1,60 +1,67 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
   
-  // Bundle optimization with aggressive splitting
+  // Bundle optimization for mobile-first
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       // Aggressive tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
       
-      // Advanced code splitting for mobile performance
+      // Mobile-optimized code splitting  
       config.optimization.splitChunks = {
         chunks: 'all',
-        minSize: 15000, // Smaller chunks for mobile
+        minSize: 10000, // Smaller chunks for mobile
         minRemainingSize: 0,
         minChunks: 1,
-        maxAsyncRequests: 25, // Reduce for mobile
-        maxInitialRequests: 25, // Reduce for mobile
-        enforceSizeThreshold: 40000,
+        maxAsyncRequests: 20, // Reduce for mobile
+        maxInitialRequests: 15, // Reduce for mobile
+        enforceSizeThreshold: 25000,
         cacheGroups: {
-          // Critical React chunks
+          // Critical React - load immediately
           react: {
             test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
             name: 'react',
-            priority: 20,
-            chunks: 'initial', // Load immediately
+            priority: 30,
+            chunks: 'initial',
+            enforce: true,
           },
-          // Next.js framework - defer
-          nextjs: {
+          // Critical framework
+          framework: {
             test: /[\\/]node_modules[\\/]next[\\/]/,
-            name: 'nextjs',
-            priority: 15,
-            chunks: 'async', // Load on demand
+            name: 'framework',
+            priority: 25,
+            chunks: 'initial',
+            enforce: true,
           },
-          // Vendor libraries - split by size
+          // Non-critical vendors - defer
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1];
-              return `vendor.${packageName}`.replace('@', '');
-            },
-            priority: 10,
-            chunks: 'async', // Load on demand for mobile
-            minSize: 8000, // Smaller vendor chunks
+            name: 'vendor',
+            priority: 20,
+            chunks: 'async',
+            minSize: 5000,
           },
           // Common modules - defer
           common: {
             name: 'common',
             minChunks: 2,
-            priority: 5,
+            priority: 15,
             chunks: 'async',
             reuseExistingChunk: true,
           },
         },
+      };
+      
+      // Reduce bundle size
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': path.resolve(__dirname, './src'),
       };
     }
     return config;
