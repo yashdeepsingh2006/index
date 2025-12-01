@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Performance optimizations
+  compress: true,
+  poweredByHeader: false,
+  
+  // Bundle optimization
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Optimize bundle size
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        cacheGroups: {
+          ...config.optimization.splitChunks.cacheGroups,
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 10,
+            chunks: 'all',
+          },
+        },
+      };
+    }
+    return config;
+  },
+  
   images: {
     remotePatterns: [
       {
@@ -27,6 +51,9 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    // Image optimization
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
 }
 

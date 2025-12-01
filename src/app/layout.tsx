@@ -1,21 +1,32 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cinzel } from "next/font/google";
 import "./globals.css";
 import Nav from "./components/Nav";
 import { SessionProvider } from "./context/SessionProvider";
 import type { Metadata } from 'next';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Script from 'next/script';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap', // Improve font loading performance
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap', // Improve font loading performance
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://dataindex.vercel.app'),
   title: {
     default: "DataIndex - AI-Powered Enterprise Data Analytics Platform",
     template: "%s | DataIndex"
@@ -126,24 +137,32 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://api.groq.com" />
+        <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
+        <link rel="dns-prefetch" href="https://vercel.com" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/og-image.png" as="image" type="image/png" />
+        <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
         
         {/* Canonical URL */}
         <link rel="canonical" href="https://dataindex.vercel.app" />
-        
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-298J1J1YN4');
-            `,
-          }}
-        />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased`}>
+        {/* Optimized Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-298J1J1YN4');
+          `}
+        </Script>
+        
         <SessionProvider>
           <div className="bg-white min-h-screen">
             {/* Navigation Component - handles its own positioning */}
