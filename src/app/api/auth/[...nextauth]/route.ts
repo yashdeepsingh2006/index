@@ -10,6 +10,7 @@ const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: '/direct/auth/login',
+    error: '/direct/auth/login',
   },
   session: {
     strategy: 'jwt',
@@ -23,6 +24,12 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) session.user.id = token.id as string
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // Always redirect to home after successful login
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
 }

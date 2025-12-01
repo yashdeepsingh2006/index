@@ -126,11 +126,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="DataIndex" />
         
-        {/* Favicon */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        {/* Favicon automatically handled by app/favicon.ico */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Preconnect for performance */}
@@ -144,7 +141,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         
         {/* Preload critical resources for mobile */}
         <link rel="preload" href="/og-image.png" as="image" type="image/png" media="(min-width: 768px)" />
-        <link rel="preload" href="/favicon-32x32.png" as="image" type="image/png" />
         
         {/* Canonical URL */}
         <link rel="canonical" href="https://dataindex.vercel.app" />
@@ -174,8 +170,58 @@ export default function RootLayout({ children }: RootLayoutProps) {
             .h-32{height:8rem}
             .rounded-lg{border-radius:0.5rem}
             .p-4{padding:1rem}
+            .p-6{padding:1.5rem}
             .mb-4{margin-bottom:1rem}
+            .mb-6{margin-bottom:1.5rem}
+            .mt-4{margin-top:1rem}
             .text-center{text-align:center}
+            .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05)}
+            .border{border:1px solid}
+            .border-\\[\\#cfd592\\]{border-color:#cfd592}
+            .bg-\\[\\#96a141\\]{background:#96a141}
+            .bg-\\[\\#757f31\\]{background:#757f31}
+            .bg-\\[\\#3e4423\\]{background:#3e4423}
+            .text-\\[\\#3e4423\\]{color:#3e4423}
+            .text-\\[\\#757f31\\]{color:#757f31}
+            .rounded-full{border-radius:50%}
+            .w-14{width:3.5rem}
+            .h-14{height:3.5rem}
+            .mx-auto{margin-left:auto;margin-right:auto}
+            .text-xl{font-size:1.25rem}
+            .font-bold{font-weight:700}
+            .font-medium{font-weight:500}
+            .text-white{color:white}
+            .opacity-75{opacity:0.75}
+            .cursor-pointer{cursor:pointer}
+            .py-3{padding-top:0.75rem;padding-bottom:0.75rem}
+            .px-4{padding-left:1rem;padding-right:1rem}
+            .rounded{border-radius:0.25rem}
+            .hover\\:bg-\\[\\#596229\\]:hover{background:#596229}
+            .transition-all{transition:all 0.15s ease}
+            .space-x-2>*+*{margin-left:0.5rem}
+            .flex-shrink-0{flex-shrink:0}
+            button{cursor:pointer;border:none;outline:none;appearance:none}
+            button:disabled{opacity:0.6;cursor:not-allowed}
+            .space-y-6>*+*{margin-top:1.5rem}
+            .space-y-8>*+*{margin-top:2rem}
+            .max-w-sm{max-width:24rem}
+            .max-w-md{max-width:28rem}
+            .max-w-lg{max-width:32rem}
+            .w-full{width:100%}
+            .bg-gradient-to-br{background:linear-gradient(to bottom right,var(--tw-gradient-stops))}
+            .from-\\[\\#f9f9ec\\]{--tw-gradient-from:#f9f9ec;--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to,rgba(249,249,236,0))}
+            .to-\\[\\#eff0d7\\]{--tw-gradient-to:#eff0d7}
+            .min-h-\\[calc\\(100vh-80px\\)\\]{min-height:calc(100vh-80px)}
+            .leading-relaxed{line-height:1.625}
+            .text-sm{font-size:0.875rem}
+            .text-xs{font-size:0.75rem}
+            .w-4{width:1rem}
+            .h-4{height:1rem}
+            .w-6{width:1.5rem}
+            .h-6{height:1.5rem}
+            svg{display:inline-block;vertical-align:middle}
+            @media (min-width:640px){.sm\\:max-w-md{max-width:28rem}.sm\\:space-y-8>*+*{margin-top:2rem}.sm\\:p-6{padding:1.5rem}.sm\\:p-8{padding:2rem}.sm\\:w-16{width:4rem}.sm\\:h-16{height:4rem}.sm\\:text-2xl{font-size:1.5rem}.sm\\:text-base{font-size:1rem}.sm\\:py-4{padding-top:1rem;padding-bottom:1rem}.sm\\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\\:w-5{width:1.25rem}.sm\\:h-5{height:1.25rem}.sm\\:space-x-3>*+*{margin-left:0.75rem}.sm\\:mb-6{margin-bottom:1.5rem}.sm\\:mb-8{margin-bottom:2rem}.sm\\:mt-6{margin-top:1.5rem}.sm\\:pt-6{padding-top:1.5rem}.sm\\:text-sm{font-size:0.875rem}}
+            @media (min-width:1024px){.lg\\:max-w-lg{max-width:32rem}.lg\\:p-8{padding:2rem}.lg\\:p-10{padding:2.5rem}.lg\\:w-20{width:5rem}.lg\\:h-20{height:5rem}.lg\\:text-3xl{font-size:1.875rem}.lg\\:text-lg{font-size:1.125rem}.lg\\:py-4{padding-top:1rem;padding-bottom:1rem}.lg\\:px-8{padding-left:2rem;padding-right:2rem}.lg\\:w-6{width:1.5rem}.lg\\:h-6{height:1.5rem}.lg\\:text-lg{font-size:1.125rem}.lg\\:mt-8{margin-top:2rem}}
           `
         }} />
       </head>
