@@ -1,10 +1,13 @@
 "use client"
 
 import { useSession } from 'next-auth/react'
+import { Suspense, lazy } from 'react'
 import Header from "./components/Header";
 import Redirect from "./components/Redirect";
 import Loading from './components/Loading';
-import FileInput from "./components/FileInput";
+
+// Lazy load heavy components
+const FileInput = lazy(() => import("./components/FileInput"));
 
 export default function Home(): React.JSX.Element {
   const { data: session, status } = useSession();
@@ -28,7 +31,9 @@ export default function Home(): React.JSX.Element {
     <div className="flex flex-col bg-white min-h-screen">
       <Header title="Home" />
       <div className='flex flex-col items-center justify-center'>
-        <FileInput onFileSelect={(file: File | null) => console.log(file)} />
+        <Suspense fallback={<div className="loading-skeleton w-96 h-32 rounded-lg"></div>}>
+          <FileInput onFileSelect={(file: File | null) => console.log(file)} />
+        </Suspense>
       </div>
     </div>
   );

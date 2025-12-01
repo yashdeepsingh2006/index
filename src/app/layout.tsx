@@ -136,44 +136,63 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        
+        {/* Mobile-optimized resource hints - defer Google Analytics */}
         <link rel="dns-prefetch" href="https://api.groq.com" />
         <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
         <link rel="dns-prefetch" href="https://vercel.com" />
         
-        {/* Preload critical resources */}
-        <link rel="preload" href="/og-image.png" as="image" type="image/png" />
-        <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
+        {/* Preload critical resources for mobile */}
+        <link rel="preload" href="/og-image.png" as="image" type="image/png" media="(min-width: 768px)" />
+        <link rel="preload" href="/favicon-32x32.png" as="image" type="image/png" />
         
         {/* Canonical URL */}
         <link rel="canonical" href="https://dataindex.vercel.app" />
+        
+        {/* Critical CSS Inline - No render blocking */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            :root{--background:#ffffff;--foreground:#171717;--font-sans:var(--font-geist-sans)}
+            @media (prefers-color-scheme:dark){:root{--background:#0a0a0a;--foreground:#ededed}}
+            body{background:var(--background);color:var(--foreground);font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,sans-serif;margin:0;padding:0;min-height:100vh}
+            .nav-container{position:fixed;top:0;left:0;right:0;z-index:50;background:white;border-bottom:1px solid #e5e7eb}
+            .main-content{padding-top:4rem}
+            @media (max-width:1023px){.nav-container{height:4rem}}
+            @media (min-width:1024px){.nav-container{position:fixed;width:20%;height:100vh;border-right:1px solid #e5e7eb;border-bottom:none}.main-content{margin-left:20%;width:80%;padding-top:0}}
+          `
+        }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased`}>
-        {/* Optimized Google Analytics */}
+        {/* Optimized Google Analytics - Deferred for mobile performance */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics-init" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-298J1J1YN4');
+            gtag('config', 'G-298J1J1YN4', {
+              page_title: document.title,
+              page_location: window.location.href,
+            });
           `}
         </Script>
         
         <SessionProvider>
           <div className="bg-white min-h-screen">
-            {/* Navigation Component - handles its own positioning */}
-            <Nav />
+            {/* Navigation Component - mobile optimized with critical CSS */}
+            <nav className="nav-container">
+              <Nav />
+            </nav>
 
-            {/* Main Content Area */}
-            <div className="lg:ml-[20%] lg:w-4/5 w-full min-h-screen pt-16 lg:pt-0">
+            {/* Main Content Area - mobile optimized */}
+            <main className="main-content min-h-screen">
               <div className="h-full overflow-auto">
                 {children}
               </div>
-            </div>
+            </main>
           </div>
           <SpeedInsights />
         </SessionProvider>
