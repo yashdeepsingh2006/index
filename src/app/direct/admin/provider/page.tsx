@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Header from '../../../components/Header'
 import Loading from '../../../components/Loading'
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Admin page metadata is handled in layout for SEO
 
 // Types for API responses
 interface ProviderSettings {

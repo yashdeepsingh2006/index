@@ -3,6 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/app/components/Header';
 import Nav from '@/app/components/Nav';
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Admin page metadata is handled in layout for SEO
 
 interface MonitoringStats {
   totalRequests: number;

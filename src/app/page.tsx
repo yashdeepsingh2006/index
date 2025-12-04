@@ -5,6 +5,10 @@ import { Suspense, lazy } from 'react'
 import Header from "./components/Header";
 import Redirect from "./components/Redirect";
 import Loading from './components/Loading';
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Main page metadata is handled in layout
 
 // Lazy load heavy components
 const FileInput = lazy(() => import("./components/FileInput"));

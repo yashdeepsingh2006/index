@@ -4,6 +4,10 @@ import React, { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Login page metadata is handled in layout for SEO
 
 export default function LoginPage(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)

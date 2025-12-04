@@ -1,6 +1,10 @@
 "use client"
 
 import React from 'react'
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Docs page metadata is handled in layout for SEO
 
 export default function DocumentationPage(): React.JSX.Element {
   return (

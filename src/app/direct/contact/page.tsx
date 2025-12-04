@@ -2,6 +2,10 @@
 
 import React, { useState } from 'react'
 import Header from '@/app/components/Header'
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Metadata should be defined in layout.tsx for these pages
 
 interface FormData {
   name: string;

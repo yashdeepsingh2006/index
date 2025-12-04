@@ -1,0 +1,37 @@
+User-agent: *
+Allow: /
+
+# Allow all bots to crawl public pages
+Allow: /direct/about
+Allow: /direct/contact
+Allow: /direct/docs
+Allow: /direct/report
+
+# Disallow admin and auth pages from search indexing
+Disallow: /direct/admin/
+Disallow: /direct/auth/
+Disallow: /api/
+
+# Allow API documentation if exists
+Allow: /api/docs
+
+# Sitemap location
+Sitemap: https://dataindex.vercel.app/sitemap.xml
+
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /direct/about
+Allow: /direct/contact
+Allow: /direct/docs
+Disallow: /direct/admin/
+Disallow: /direct/auth/
+
+User-agent: Bingbot
+Allow: /direct/about
+Allow: /direct/contact
+Allow: /direct/docs
+Disallow: /direct/admin/
+Disallow: /direct/auth/

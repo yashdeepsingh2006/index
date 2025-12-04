@@ -6,6 +6,10 @@ import Header from '@/app/components/Header'
 import Graphs from '@/app/components/Graphs';
 import ChatbotInterface from '@/app/components/ChatbotInterface';
 import InsightsDisplay from '@/app/components/InsightsDisplay';
+import type { Metadata } from 'next'
+
+// Note: Client components cannot export metadata in Next.js App Router
+// Report page metadata is handled in layout for SEO
 
 interface FileData {
   fileInfo: {

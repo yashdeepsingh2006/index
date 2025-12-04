@@ -116,7 +116,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <head>
         {/* SEO Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -125,6 +125,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="DataIndex" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="color-scheme" content="light" />
         
         {/* Favicon automatically handled by app/favicon.ico */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -144,6 +146,48 @@ export default function RootLayout({ children }: RootLayoutProps) {
         
         {/* Canonical URL */}
         <link rel="canonical" href="https://dataindex.vercel.app" />
+        
+        {/* Structured Data JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "DataIndex",
+              "applicationCategory": "BusinessApplication",
+              "applicationSubCategory": "Business Intelligence",
+              "operatingSystem": "Web Browser",
+              "url": "https://dataindex.vercel.app",
+              "description": "AI-powered enterprise data analytics platform for business intelligence, data visualization, and interactive insights using Groq and Gemini models.",
+              "author": {
+                "@type": "Person",
+                "name": "Yashdeep Singh",
+                "url": "https://github.com/yashdeepsingh2006"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "DataIndex"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+              },
+              "featureList": [
+                "AI-powered data analysis",
+                "Interactive data visualization",
+                "CSV and Excel file support",
+                "Real-time chat with data",
+                "Enterprise-grade caching",
+                "Rate limiting and monitoring",
+                "Google OAuth authentication"
+              ],
+              "screenshot": "https://dataindex.vercel.app/og-image.png"
+            })
+          }}
+        />
         
         {/* Critical CSS Inline - No render blocking */}
         <style dangerouslySetInnerHTML={{
@@ -220,12 +264,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
             .w-6{width:1.5rem}
             .h-6{height:1.5rem}
             svg{display:inline-block;vertical-align:middle}
+            .skip-link{position:absolute;top:-40px;left:0;background:#596229;color:white;padding:8px 16px;text-decoration:none;border-radius:4px;z-index:100}
+            .skip-link:focus{top:16px}
+            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+            .focus\\:not-sr-only:focus{position:static;width:auto;height:auto;padding:0;margin:0;overflow:visible;clip:auto;white-space:normal}
             @media (min-width:640px){.sm\\:max-w-md{max-width:28rem}.sm\\:space-y-8>*+*{margin-top:2rem}.sm\\:p-6{padding:1.5rem}.sm\\:p-8{padding:2rem}.sm\\:w-16{width:4rem}.sm\\:h-16{height:4rem}.sm\\:text-2xl{font-size:1.5rem}.sm\\:text-base{font-size:1rem}.sm\\:py-4{padding-top:1rem;padding-bottom:1rem}.sm\\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\\:w-5{width:1.25rem}.sm\\:h-5{height:1.25rem}.sm\\:space-x-3>*+*{margin-left:0.75rem}.sm\\:mb-6{margin-bottom:1.5rem}.sm\\:mb-8{margin-bottom:2rem}.sm\\:mt-6{margin-top:1.5rem}.sm\\:pt-6{padding-top:1.5rem}.sm\\:text-sm{font-size:0.875rem}}
             @media (min-width:1024px){.lg\\:max-w-lg{max-width:32rem}.lg\\:p-8{padding:2rem}.lg\\:p-10{padding:2.5rem}.lg\\:w-20{width:5rem}.lg\\:h-20{height:5rem}.lg\\:text-3xl{font-size:1.875rem}.lg\\:text-lg{font-size:1.125rem}.lg\\:py-4{padding-top:1rem;padding-bottom:1rem}.lg\\:px-8{padding-left:2rem;padding-right:2rem}.lg\\:w-6{width:1.5rem}.lg\\:h-6{height:1.5rem}.lg\\:text-lg{font-size:1.125rem}.lg\\:mt-8{margin-top:2rem}}
           `
         }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased`}>
+        {/* Skip to main content link for accessibility */}
+        <a href="#main-content" className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#596229] text-white px-4 py-2 rounded z-50">
+          Skip to main content
+        </a>
+        
         {/* Analytics moved to bottom - minimal impact on LCP */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-298J1J1YN4"
@@ -246,12 +299,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <SessionProvider>
           <div className="bg-white min-h-screen">
             {/* Navigation Component - mobile optimized with critical CSS */}
-            <nav className="nav-container">
+            <nav className="nav-container" role="navigation" aria-label="Main navigation">
               <Nav />
             </nav>
 
             {/* Main Content Area - mobile optimized */}
-            <main className="main-content min-h-screen">
+            <main className="main-content min-h-screen" role="main" id="main-content">
               <div className="h-full overflow-auto">
                 {children}
               </div>
